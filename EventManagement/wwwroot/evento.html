@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Eventos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Lista de Eventos</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Lugar</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="eventosTable">
+                <!-- Los eventos se cargarán aquí -->
+            </tbody>
+        </table>
+        <a href="evento_form.html" class="btn btn-primary">Agregar Evento</a>
+    </div>
+
+    <script>
+        // Cargar la lista de eventos desde la API
+        fetch('https://localhost:44361/api/Eventos')  // Cambia esta URL si es necesario
+            .then(response => response.json())
+            .then(data => {
+                const eventosTable = document.getElementById('eventosTable');
+                data.forEach(evento => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${evento.Titulo}</td>
+                        <td>${evento.Descripcion}</td>
+                        <td>${evento.Lugar}</td>
+                        <td>${new Date(evento.Fecha).toLocaleDateString()}</td>
+                        <td>
+                            <a href="evento_form.html?id=${evento.ID}" class="btn btn-warning">Editar</a>
+                            <button class="btn btn-danger" onclick="deleteEvento(${evento.ID})">Eliminar</button>
+                        </td>
+                    `;
+                    eventosTable.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error al cargar los eventos:', error));
+
+        // Función para eliminar un evento
+        function deleteEvento(id) {
+            // Confirmación antes de eliminar
+            if (confirm('¿Estás seguro de que quieres eliminar este evento?')) {
+                fetch(`http://localhost:44307/api/Eventos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Evento eliminado');
+                        location.reload(); // Recargar la página para actualizar la lista
+                    } else {
+                        alert('Error al eliminar el evento');
+                    }
+                })
+                .catch(error => console.error('Error al eliminar el evento:', error));
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Evento</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Formulario de Evento</h2>
+        <form id="eventoForm">
+            <input type="hidden" id="eventoID"> <!-- Este campo es para el ID del evento (solo para editar) -->
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="titulo" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="lugar" class="form-label">Lugar</label>
+                <input type="text" class="form-control" id="lugar" required>
+            </div>
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fecha" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Evento</button>
+        </form>
+        <a href="evento.html" class="btn btn-secondary mt-3">Volver a la lista de eventos</a>
+    </div>
+
+    <script>
+        // Función para obtener los parámetros de la URL (en este caso el ID del evento)
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Si hay un evento para editar (ID presente en la URL)
+        const eventoID = getQueryParam('id');
+        if (eventoID) {
+            // Llenar el formulario con los datos del evento para edición
+            fetch(`http://localhost:3080/api/Eventos/${eventoID}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('eventoID').value = data.ID;
+                    document.getElementById('titulo').value = data.Titulo;
+                    document.getElementById('descripcion').value = data.Descripcion;
+                    document.getElementById('lugar').value = data.Lugar;
+                    document.getElementById('fecha').value = new Date(data.Fecha).toISOString().split('T')[0]; // Formato adecuado para el input tipo date
+                })
+                .catch(error => console.error('Error al obtener los datos del evento:', error));
+        }
+
+        // Enviar los datos del formulario al backend para crear o actualizar un evento
+        document.getElementById('eventoForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario (recargar la página)
+
+            const eventoData = {
+                Titulo: document.getElementById('titulo').value,
+                Descripcion: document.getElementById('descripcion').value,
+                Lugar: document.getElementById('lugar').value,
+                Fecha: document.getElementById('fecha').value
+            };
+
+            // Determinar si es creación o actualización según si existe el ID
+            let method = 'POST';
+            let url = 'https://localhost:44361/api/Eventos'; // URL por defecto para crear evento
+
+            if (eventoID) {
+                method = 'PUT';
+                url = `https://localhost:44361/api/Eventos/${eventoID}`; // URL para actualizar evento
+            }
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventoData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Evento guardado exitosamente');
+                    window.location.href = 'evento.html'; // Redirigir a la lista de eventos
+                } else {
+                    alert('Error al guardar el evento');
+                }
+            })
+            .catch(error => console.error('Error al guardar el evento:', error));
+        });
+    </script>
+</body>
+</html>
