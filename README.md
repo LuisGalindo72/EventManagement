@@ -1,6 +1,6 @@
 # EventManagement
 
-1. Arquitectura del Proyecto
+### 1. **Arquitectura del Proyecto**
 
 El proyecto se dividió en dos partes principales: **Backend** y **Frontend** (Interfaz de usuario). 
 
