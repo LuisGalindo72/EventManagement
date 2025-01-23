@@ -75,6 +75,4 @@ Aunque no se implementó cifrado de contraseñas ni autenticación avanzada, se 
 ### 5. **Problemas y Soluciones**
 
 A lo largo del proyecto, surgieron algunos problemas comunes:
-- **Conexión CORS**: Se solucionó configurando correctamente CORS en el backend.
-- **Errores de configuración en `web.config`**: Se revisaron las configuraciones de IIS y `web.config` para asegurar que no hubiera errores en la estructura o configuraciones de autenticación.
-- **Autenticación básica**: Se implementó un sistema básico de autenticación por correo y contraseña, aunque se podría mejorar con un enfoque más seguro en el futuro.
+-Al momento de correr la página hubieron errores de conexión entre el backend y el frontend ya que el servidor marcar errores de enrutamiento con la conexión
